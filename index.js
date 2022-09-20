@@ -82,21 +82,9 @@ app.get('/api/Order/:id', (req, res) => {
 //Basic POST API for adding new order
 app.post('/api/Orders', (req,res) => {
   const order = {
-    Id: req.params.Id,
-    RestaurantName: req.params.RestaurantName,
-    OrderDetails:[
-      {
-        "id":10,
-        "name": "Big MAC",
-        "quantity": 4,
-        "unitprice":550,
-        "totalprice":2200,
-        "mealId":100,
-        "createdAt": "2020-07-03 09:00:58.045 +00:00",
-        "updatedAt": "2020-07-03 09:00:58.045 +00:00",
-        "orderId": 1026
-      }
-    ]
+    Id: req.body.Id,
+    RestaurantName: req.body.RestaurantName,
+    OrderDetails:req.body.OrderDetails
   };
   Orders.push(order);
   res.send(order);
