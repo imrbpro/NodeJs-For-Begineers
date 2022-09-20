@@ -2,6 +2,7 @@
 const express = require('express');
 //Using express
 const app = express();
+app.use(express.json());
 
 const Orders = [
   {
@@ -76,6 +77,29 @@ app.get('/api/MyOrders', (req,res) => {
 app.get('/api/Order/:id', (req, res) => {
   const order = Orders.find(o => o.Id == req.params.id);
   order == null ? res.status(404).send('Order Not Found ...!') : res.send(order);
+});
+
+//Basic POST API for adding new order
+app.post('/api/Orders', (req,res) => {
+  const order = {
+    Id: req.params.Id,
+    RestaurantName: req.params.RestaurantName,
+    OrderDetails:[
+      {
+        "id":10,
+        "name": "Big MAC",
+        "quantity": 4,
+        "unitprice":550,
+        "totalprice":2200,
+        "mealId":100,
+        "createdAt": "2020-07-03 09:00:58.045 +00:00",
+        "updatedAt": "2020-07-03 09:00:58.045 +00:00",
+        "orderId": 1026
+      }
+    ]
+  };
+  Orders.push(order);
+  res.send(order);
 });
 
 // Assiging port to the application
