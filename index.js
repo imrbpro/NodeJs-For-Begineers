@@ -62,7 +62,7 @@ app.use(express.json());
 
 // Assiging port to the application
 
-const userRoute = require('./user');
+const userRoute = require('./routes/user');
 
 app.use('/user',userRoute);
 
