@@ -1,8 +1,11 @@
 //Installed ExpressJs Framework for Modularity
 const express = require('express');
+const log = require('./middlewares/ActivityLog')
 //Using express
 const app = express();
 app.use(express.json());
+//Custom Middlewares
+app.use(log);
 
 const Orders = [
   {
