@@ -1,97 +1,63 @@
 //Installed ExpressJs Framework for Modularity
 const express = require('express');
-const log = require('./middlewares/ActivityLog')
+
 //Using express
 const app = express();
+
+//using json middleware from express for parsing of data
 app.use(express.json());
-//Custom Middlewares
-app.use(log);
 
-const Orders = [
-  {
-    Id: 1024, 
-    RestaurantName: 'KFC', 
-    OrderDetails:[
-    {
-    "id": 4,
-    "name": "Mighty Zinger",
-    "quantity": 3,
-    "unitprice": 600,
-    "totalprice": 1800,
-    "mealId": 1,
-    "createdAt": "2020-06-03 09:00:58.045 +00:00",
-    "updatedAt": "2020-06-03 09:00:58.045 +00:00",
-    "orderId": 1024
-  },
-  {
-    "id": 2,
-    "name": "Chicken & Chips",
-    "quantity": 2,
-    "unitprice": 425,
-    "totalprice": 850,
-    "mealId": 2,
-    "createdAt": "2020-06-03 09:00:58.045 +00:00",
-    "updatedAt": "2020-06-03 09:00:58.045 +00:00",
-    "orderId": 1024
+//Step 0 : configuring express middleware  "express.static"  to serve static html files
+app.use(express.static('public'));
+
+//Initial Page Setup For Display
+app.get('/',function(req,res){
+  res.set({
+     'Access-control-Allow-Origin': '*'
+  });
+  return res.redirect('home.html');
+})
+
+//*********************************** mongo db with express step by step *********************************** 
+
+//step 1 : installed mongoose using npm install mongoose --save
+
+//step 2 : now using mongoose 
+const mongoose = require('mongoose');
+
+//step 3 : configuring mongoose with my localhost mongodb url and connecting to database using connect function from mongoose
+mongoose.connect('mongodb://localhost:1080/DemoDB');
+
+//step 4 : getting connection
+var db = mongoose.connection;
+
+//step 5 : checking error whilte establishing connection to mongodb
+db.on('error', console.log.bind(console,"Connection not established... Error Occured."));
+
+//step 6 : opening connection
+db.once('open', (callback) => {
+  console.log('Connection Open Success..')
+});
+
+//step 7 : Making Basic Signup POST API for registering a user in mongodb database
+app.post('/sign_up', function(req,res){
+  var name = req.body.name;
+  var email =req.body.email;
+  var pass = req.body.password;
+  var phone =req.body.phone;
+
+  var data = {
+     "name": name,
+     "email":email,
+     "password":pass
   }
-]
-}
-,{
-  Id: 1025, 
-  RestaurantName: 'Dominos', 
-  OrderDetails:[
-  {
-  "id": 6,
-  "name": "Tangy Wings",
-  "quantity": 1,
-  "unitprice": 299,
-  "totalprice": 299,
-  "mealId": 54,
-  "createdAt": "2020-07-03 09:00:58.045 +00:00",
-  "updatedAt": "2020-07-03 09:00:58.045 +00:00",
-  "orderId": 1025
-},
-{
-  "id": 7,
-  "name": "Large Deal 7",
-  "quantity": 2,
-  "unitprice": 1999,
-  "totalprice": 3998,
-  "mealId": 76,
-  "createdAt": "2020-07-03 09:00:58.045 +00:00",
-  "updatedAt": "2020-07-03 09:00:58.045 +00:00",
-  "orderId": 1025
-}
-]
-}
-];
+  db.collection('details').insertOne(data,function(err, collection){
+  if (err) throw err;
+     console.log("Record inserted Successfully");
+  });
+  return res.redirect('success.html');
+}) 
 
-//Creating basic Get API
-app.get('/',(req,res) => {
-    res.send('This is a Basic Get API')
-});
-
-//Get API for getting All Orders
-app.get('/api/MyOrders', (req,res) => {
-  res.send(Orders);
-});
-
-//Get API for getting order by id
-app.get('/api/Order/:id', (req, res) => {
-  const order = Orders.find(o => o.Id == req.params.id);
-  order == null ? res.status(404).send('Order Not Found ...!') : res.send(order);
-});
-
-//Basic POST API for adding new order
-app.post('/api/Orders', (req,res) => {
-  const order = {
-    Id: req.body.Id,
-    RestaurantName: req.body.RestaurantName,
-    OrderDetails:req.body.OrderDetails
-  };
-  Orders.push(order);
-  res.send(order);
-});
 
 // Assiging port to the application
 const PORT = process.env.PORT || 2022;
