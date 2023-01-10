@@ -1,9 +1,9 @@
 //Installed ExpressJs Framework for Modularity
 const express = require('express');
-
+const cookieParser = require ('cookie-parser');
 //Using express
 const app = express();
-
+app.use(cookieParser());
 //using json middleware from express for parsing of data
 app.use(express.json());
 // {
@@ -62,6 +62,23 @@ app.use(express.json());
 
 // Assiging port to the application
 
+
+//Cookies Basics using cookie-parser
+app.get('/createCookie', (req,res) => {
+  res.cookie('IsLoggerEnabled','True',{
+    httpOnly:true
+  })
+  res.cookie('IsRemembered','True')
+})
+
+app.get('/readCookie', (req,res) => {
+  console.log(req.cookies);
+})
+
+app.get('/removeCookie',(req,res) => {
+  res.clearCookie('IsLoggerEnabled');
+  res.send('Logger Cookie Removed')
+})
 const userRoute = require('./routes/user');
 
 app.use('/user',userRoute);
